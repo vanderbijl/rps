@@ -1,0 +1,66 @@
+<html>
+<script>
+
+function computerPlay() {
+    switch (Math.floor(Math.random() * 3)) {
+        case 0: return "rock"
+        case 1: return "scissors"
+        case 2: return "paper"
+    }
+}
+
+function playerPlay() {
+    let playerSelection = window.prompt("Paper, scissors, rock?").toLowerCase();
+    if (playerSelection != "paper" && playerSelection != "rock" && playerSelection != "scissors") { // user entered something stupid
+        playerSelection = computerPlay();
+        window.confirm ("You didn't type rock, paper or scissors. So let's choose " + playerSelection + ".")
+    }
+    return playerSelection;
+}
+function playRound(playerSelection, computerSelection) {
+    switch (playerSelection) {
+        case "rock":
+            switch (computerSelection) {
+                case "rock": return [0, "Tie!"]
+                case "paper": return [-1, "You loose. Paper beats rock."]
+                case "scissors": return [1, "You win. Rock beats scissors."]
+            }
+        case "paper":
+        switch (computerSelection) {
+                case "paper": return [0, "Tie!"]
+                case "scissors": return [-1, "You loose. Scissors beats paper."]
+                case "rock": return [1, "You win. Paper beats rock."]
+            }
+        case "scissors":
+        switch (computerSelection) {
+                case "scissors": return [0, "Tie!"]
+                case "rock": return [-1, "You loose. Rock beats scissors."]
+                case "paper": return [1, "You win. Scissors beats paper."]
+            }
+    }
+}
+
+function game() {
+    let score = 0;
+
+    for (round = 1; round < 6; round++) {
+        const playerSelection = playerPlay();
+        const computerSelection = computerPlay();
+        const result = playRound(playerSelection, computerSelection);
+        console.log("Round " + round + ": " + result[1]);
+        score = score + result[0];
+    }
+
+    if (score > 0) {
+        console.log ("You win.")
+    } else if (score < 0) {
+        console.log ("You loose.")
+    } else {
+        console.log ("Tie.")
+    }
+}
+
+game();
+
+</script>
+</html>
