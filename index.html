@@ -1,4 +1,23 @@
 <html>
+
+<body>
+    <h1>Rock, paper, scissors</h1>
+    <div>
+        <h2 id="playerScore">You</h2>
+        <button id="rock" class="playerButton">rock</button>
+        <button id="paper" class="playerButton">paper</button>
+        <button id="scissors" class="playerButton">scissors</button>
+    </div>
+    <div><h2 id="computerScore">Computer</h2>
+        <button id="rock" class="computerButton">rock</button>
+        <button id="paper" class="computerButton">paper</button>
+        <button id="scissors" class="computerButton">scissors</button>
+    </div>
+    <div><h2>Comment</h2>
+        <div id="comment"></div>
+    </div>
+</body>
+
 <script>
 
 function computerPlay() {
@@ -9,15 +28,7 @@ function computerPlay() {
     }
 }
 
-function playerPlay() {
-    let playerSelection = window.prompt("Paper, scissors, rock?").toLowerCase();
-    if (playerSelection != "paper" && playerSelection != "rock" && playerSelection != "scissors") { // user entered something stupid
-        playerSelection = computerPlay();
-        window.confirm ("You didn't type rock, paper or scissors. So let's choose " + playerSelection + ".")
-    }
-    return playerSelection;
-}
-function playRound(playerSelection, computerSelection) {
+function decideRound(playerSelection, computerSelection) {
     switch (playerSelection) {
         case "rock":
             switch (computerSelection) {
@@ -40,27 +51,99 @@ function playRound(playerSelection, computerSelection) {
     }
 }
 
-function game() {
-    let score = 0;
-
-    for (round = 1; round < 6; round++) {
-        const playerSelection = playerPlay();
-        const computerSelection = computerPlay();
-        const result = playRound(playerSelection, computerSelection);
-        console.log("Round " + round + ": " + result[1]);
-        score = score + result[0];
-    }
-
-    if (score > 0) {
-        console.log ("You win.")
-    } else if (score < 0) {
-        console.log ("You loose.")
-    } else {
-        console.log ("Tie.")
-    }
+function resetColor() {
+    buttons = document.querySelectorAll("Button");
+    
+    buttons.forEach((button) => {
+        button.classList.remove('green');
+        button.classList.remove('yellow');
+        button.classList.remove('red');
+    });
 }
 
-game();
+function colorButtons(computerSelection, playerSelection, result) {
+    resetColor()
+
+    computerButtons.forEach((computerButton) => {
+        if (computerButton.id == computerSelection) {
+            if (result[0] == -1) computerButton.classList.add('green');
+            if (result[0] == 0) computerButton.classList.add('yellow');
+            if (result[0] == 1) computerButton.classList.add('red');
+        }
+    });
+
+    playerButtons.forEach((playerButton) => {
+        if (playerButton.id == playerSelection) {
+            if (result[0] == 1) playerButton.classList.add('green');
+            if (result[0] == 0) playerButton.classList.add('yellow');
+            if (result[0] == -1) playerButton.classList.add('red');
+        }
+    });
+}
+
+function playRound(playerSelection) {
+    const computerSelection = computerPlay();
+    const result = decideRound(playerSelection, computerSelection);
+    document.querySelector("#comment").textContent = ("Round " + round + ": " + result[1]);
+
+    if (result[0] == -1) { computerScore ++ } ;
+    if (result[0] == 1) { playerScore ++ } ;
+
+    colorButtons(computerSelection, playerSelection, result);
+
+    document.querySelector("#playerScore").textContent = "You: " + playerScore;    
+    document.querySelector("#computerScore").textContent = "Computer: " + computerScore;
+}
+
+function endGame(winner) {
+    document.querySelector("#comment").textContent = ("Game! " + winner + " wins! Click a button to restart.");
+    gameEnded = true;
+}
+
+function reInitialize() {
+    score = 0, round = 0, computerScore = 0, playerScore = 0, gameEnded = false;
+    document.querySelector("#comment").textContent = ("There we go again.");
+    document.querySelector("#playerScore").textContent = "You";    
+    document.querySelector("#computerScore").textContent = "Computer";
+    resetColor();
+}
+
+// init
+
+let score = 0, round = 0, computerScore = 0, playerScore = 0, gameEnded = false;
+const playerButtons = document.querySelectorAll(".playerButton");
+const computerButtons = document.querySelectorAll(".computerButton");
+
+// game
+
+playerButtons.forEach((playerButton) => {
+ playerButton.addEventListener('click', () => {
+     if (gameEnded) { // button clicked to play again
+         reInitialize();
+         return;
+     }
+     round += 1;
+     playRound(playerButton.id);
+     if (playerScore >= 5) { endGame("Player")}
+     if (computerScore >= 5) { endGame("Computer")}
+     });
+});
 
 </script>
+
+<style>
+
+.red {
+    background-color: red;
+}
+
+.yellow {
+    background-color: yellow;
+}
+
+.green {
+    background-color: green;
+}
+
+</style>
 </html>
